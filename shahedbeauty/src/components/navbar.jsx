@@ -11,7 +11,7 @@ export default function Navbar({ onNavigate }) {
       <div className="navbar-container">
         <button onClick={() => onNavigate("home")} className="navbar-logo">
           <div className="logo-icon">✨</div>
-          <span className="logo-text">Luma Laser Clinic</span>
+          <span className="logo-text">Shahed Beauty</span>
         </button>
 
         <nav className="navbar-nav desktop-nav">

@@ -4,7 +4,6 @@ import Homepage from './homepage/homepage'
 import Booking from './booking/booking'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-
 import './App.css'
 
 function App() {
