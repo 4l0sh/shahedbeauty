@@ -34,13 +34,13 @@ export default function Navbar({ onNavigate }) {
             href="tel:+1234567890"
             className="call-link"
           >
-            📞 Call
+            📞 Bel
           </a>
           <button
             onClick={() => onNavigate("booking")}
             className="book-btn"
           >
-            Book Now
+            Boek Nu
           </button>
         </div>
 

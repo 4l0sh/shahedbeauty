@@ -313,8 +313,8 @@ function ContactSection() {
   return (
     <section id="contact" className="contact-section">
       <div className="contact-header">
-        <h2 className="contact-title">Contact & Location</h2>
-        <p className="contact-subtitle">Questions? We're here to help.</p>
+        <h2 className="contact-title">Contact & Locatie</h2>
+        <p className="contact-subtitle">Vragen? We zijn hier om te helpen.</p>
       </div>
 
       <div className="contact-grid">
@@ -375,9 +375,9 @@ function ContactSection() {
             disabled={loading}
             className="contact-form-submit"
           >
-            {loading ? "Sending..." : "Send Message"}
+            {loading ? "Verzenden..." : "Verzend Bericht"}
           </button>
-          {sent && <div className="contact-form-success">Thanks! We'll reply shortly.</div>}
+          {sent && <div className="contact-form-success">Bedankt! We nemen snel contact met u op.</div>}
         </form>
       </div>
     </section>
@@ -388,7 +388,7 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer-content">
-        <div>© {new Date().getFullYear()} Luma Laser Clinic</div>
+        <div>© {new Date().getFullYear()} Shahed Beauty</div>
         <nav className="footer-nav">
           <a href="#packages" className="footer-link">
             Packages
