@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { saveAppointmentToDatabase } from "../utils/saveAppointment"
 import "./booking.css"
 
 export default function Booking() {
@@ -72,11 +73,22 @@ export default function Booking() {
 
   const handleSubmit = async () => {
     setSubmitting(true)
-    // Simulate booking submission
-    setTimeout(() => {
+    
+    try {
+      console.log('Attempting to save appointment:', bookingData);
+      
+      // Save appointment to database
+      const result = await saveAppointmentToDatabase(bookingData);
+      console.log('Appointment saved successfully:', result);
+      
+      // Set confirmed state after successful save
       setConfirmed(true)
       setSubmitting(false)
-    }, 2000)
+    } catch (error) {
+      console.error('Failed to save appointment:', error);
+      alert('Er is een fout opgetreden bij het opslaan van uw afspraak. Probeer het opnieuw.');
+      setSubmitting(false)
+    }
   }
 
   const downloadCalendar = () => {

@@ -33,10 +33,10 @@ function HeroSection({ onNavigate }) {
 
       <div className="hero-content">
         <h1 className="hero-title">
-          Onze Iconic Diamond Diode  Laser is De krachtigste Diode laser nu op de markt voor een perfect glad lichaam.
+          Neem zo snel mogelijk contact met ons op en ervaar de uitlime kracht van onze ICONIC Diamond Diode Laser 2024 en bereik buitengewone resultaten.
         </h1>
         <p className="hero-subtitle">
-          Onze diode laser is hier in Nederland ontwerpt bij Beauty Business Holland.
+          We werken met alle zorgverzekeraars.
         </p>
 
         <div className="hero-buttons">
@@ -90,12 +90,15 @@ function TechnologySection() {
   return (
     <section id="technology" className="tech-section">
       <div className="tech-header">
+        <h1 className="tech-title">
+          Diamond Diode Laser 2024
+        </h1>
         <h2 className="tech-title">
-          Meet the AstraPulse Pro 9000
+          De krachtigste Diode laser nu op de markt voor een perfect glad lichaam.
+          
         </h2>
         <p className="tech-subtitle">
-          Our newest-generation dual-wavelength diode platform delivers precision energy with advanced cooling for
-          comfort and speed.
+          Onze diode laser is hier in Nederland ontwerpt bij Beauty Business Holland.
         </p>
       </div>
 
