@@ -64,26 +64,26 @@ function HeroSection({ onNavigate }) {
 
 function TechnologySection() {
   const features = [
+     {
+    icon: "🔍",
+    title: "Hair & Skin Analyzer",
+    text: "Geavanceerde analyse voor veilige en op maat gemaakte behandelingen.",
+  },
     {
-      icon: "🪶",
-      title: "Comfort-First",
-      text: "Advanced contact cooling maintains a comfortable skin surface throughout treatment.",
-    },
+    icon: "⚡",
+    title: "Extreme Kracht",
+    text: "Met maar liefst 5000W vermogen voor razendsnelle en effectieve behandelingen.",
+  },
+   {
+    icon: "🔇",
+    title: "SuperSilent Technologie",
+    text: "Krachtige prestaties met een fluisterstille motor voor meer comfort.",
+  },
     {
-      icon: "⏱️",
-      title: "Faster Sessions",
-      text: "High repetition rates and large spot size reduce total session time.",
-    },
-    {
-      icon: "☀️",
-      title: "All Skin Tones",
-      text: "Dual-wavelength technology tuned for safe, effective results across Fitzpatrick I–VI.",
-    },
-    {
-      icon: "🛡️",
-      title: "Precision + Safety",
-      text: "Smart energy delivery with integrated skin contact sensors for consistent outcomes.",
-    },
+    icon: "🎯",
+    title: "Maximale Precisie",
+    text: "Extra detailopzetstuk voor nauwkeurige behandelingen en perfecte resultaten.",
+  },
   ]
 
   return (
@@ -388,7 +388,10 @@ function ContactSection() {
           >
             {loading ? "Verzenden..." : "Verzend Bericht"}
           </button>
-          {sent && <div className="contact-form-success">Bedankt! We nemen snel contact met u op.</div>}
+          {sent && <div className="contact-form-success">
+            Bedankt! We nemen snel contact met u op.<br/>
+            <small>Controleer ook uw spam/ongewenste mail folder voor onze bevestiging.</small>
+          </div>}
         </form>
       </div>
     </section>
