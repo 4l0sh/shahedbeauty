@@ -33,7 +33,6 @@ console.log('Attempting to connect to MongoDB...');
 let db;
 
 // Configure SendGrid
-console.log('Configuring SendGrid with API key:', process.env.SENDGRID_API_KEY ? 'API key found' : 'API key missing');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Use the original URI with proper SSL
@@ -69,14 +68,10 @@ app.post('/api/contact', async (req, res) => {
     console.log('Received contact form:', req.body);
     const { name, email, message } = req.body;
     
-    console.log('Preparing to send emails...');
-    console.log('From email:', process.env.EMAIL_USER);
-    console.log('To email (owner):', process.env.EMAIL_USER);
-    console.log('To email (customer):', email);
+    console.log('Sending emails from:', process.env.EMAIL_USER);
     
     // Send email to you (business owner)
-    console.log('Sending email to business owner...');
-    const ownerEmail = await sgMail.send({
+    await sgMail.send({
       to: process.env.EMAIL_USER,
       from: process.env.EMAIL_USER,
       subject: 'Nieuw Contact Formulier - Shahed Beauty',
@@ -88,11 +83,9 @@ app.post('/api/contact', async (req, res) => {
         <p>${message}</p>
       `
     });
-    console.log('Owner email sent successfully:', ownerEmail[0].statusCode);
 
     // Send confirmation to customer
-    console.log('Sending confirmation to customer...');
-    const customerEmail = await sgMail.send({
+    await sgMail.send({
       to: email,
       from: process.env.EMAIL_USER,
       subject: 'Bedankt voor uw bericht - Shahed Beauty',
@@ -108,14 +101,16 @@ app.post('/api/contact', async (req, res) => {
         WhatsApp: +31 6 86116982</small></p>
       `
     });
-    console.log('Customer email sent successfully:', customerEmail[0].statusCode);
 
-    console.log('All contact emails sent successfully');
+    console.log('Contact emails sent successfully');
     res.status(200).json({ message: 'Contact form sent successfully' });
   } catch (error) {
     console.error('Error sending contact email:', error);
-    console.error('Error details:', error.response?.body || error.message);
-    res.status(500).json({ error: 'Failed to send contact form', details: error.message });
+    console.error('SendGrid error details:', error.response?.body);
+    res.status(500).json({ 
+      error: 'Failed to send contact form', 
+      details: error.response?.body?.errors || error.message 
+    });
   }
 });
 
