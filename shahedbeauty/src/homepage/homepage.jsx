@@ -1,11 +1,10 @@
-"use client"
-
 import { useState } from "react"
 import './homepage.css'
 import Device from './../Photos/device.png'
 import HederDevice from '../Photos/headerDevice.png'
 import Before1 from '../Photos/before-1.png'
 import After1 from '../Photos/after-1.png'
+
 
 export default function Homepage({ onNavigate }) {
   return (
@@ -132,48 +131,44 @@ function TechnologySection() {
 function PackagesSection({ onNavigate }) {
   const packages = [
     {
-      id: "single",
-      name: "Single Session",
-      price: "$89",
-      description: "Ideal for touch-ups or small areas.",
-      features: ["Quick 15–30 min visit", "Any one area", "Pay-as-you-go"],
-      icon: "✨",
-    },
-    {
-      id: "full-body",
-      name: "Full-Body Bundle",
-      price: "$299",
-      description: "Head-to-toe smooth in one efficient visit.",
-      features: ["Multiple areas in one session", "Priority booking", "Best value"],
-      icon: "📦",
-    },
-    {
-      id: "subscription",
-      name: "6-Month Plan",
-      price: "$79/mo",
-      description: "Monthly visits for consistent long-term results.",
-      features: ["1 session per month", "Flexible areas", "Cancel anytime"],
-      icon: "✅",
+      id: "full-body-discount",
+      name: "Volledig Lichaam - Speciale Aanbieding",
+      price: "€200",
+      originalPrice: "€300",
+      description: "Complete lichaam behandeling met onze geavanceerde diode laser.",
+      features: [
+        "Alle lichaamsdelen inbegrepen",
+        "Pijnloos bij -24°C",
+        "Gratis nabehandeling",
+        "€100 korting - Beperkte tijd!"
+      ],
+      icon: "💎",
+      isSpecial: true,
     },
   ]
 
   return (
     <section id="packages" className="packages-section">
       <div className="packages-header">
-        <h2 className="packages-title">Packages</h2>
+        <h2 className="packages-title">Speciale Aanbieding</h2>
         <p className="packages-subtitle">
-          Choose the plan that fits your goals. All treatments are performed with our newest-generation device.
+          Profiteer nu van onze exclusieve korting op onze volledig lichaam behandeling met de nieuwste Diamond Diode Laser technologie.
         </p>
       </div>
 
-      <div className="packages-grid">
+      <div className="packages-grid single-package">
         {packages.map((pkg) => (
-          <div key={pkg.id} className="package-card">
+          <div key={pkg.id} className={`package-card ${pkg.isSpecial ? 'package-special' : ''}`}>
             <div className="package-badge">
               <span className="package-badge-icon">{pkg.icon}</span>
               <span className="package-badge-text">{pkg.name}</span>
             </div>
-            <div className="package-price">{pkg.price}</div>
+            <div className="package-pricing">
+              <div className="package-price">{pkg.price}</div>
+              {pkg.originalPrice && (
+                <div className="package-original-price">{pkg.originalPrice}</div>
+              )}
+            </div>
             <p className="package-description">{pkg.description}</p>
 
             <ul className="package-features">
@@ -190,13 +185,13 @@ function PackagesSection({ onNavigate }) {
                 onClick={() => onNavigate("booking")}
                 className="package-btn-primary"
               >
-                Book {pkg.name}
+                Boek Nu - {pkg.price}
               </button>
               <a
                 href="#contact"
                 className="package-btn-secondary"
               >
-                Ask Question
+                Meer Informatie
               </a>
             </div>
           </div>
@@ -226,8 +221,8 @@ function TestimonialsSection() {
   return (
     <section id="results" className="testimonials-section">
       <div className="testimonials-header">
-        <h2 className="testimonials-title">Testimonials & Results</h2>
-        <p className="testimonials-subtitle">Real clients. Real outcomes. Slide to compare before and after.</p>
+        <h2 className="testimonials-title">Resultaten</h2>
+        <p className="testimonials-subtitle">Echte klanten. Echte resultaten. Sleep om voor en na te vergelijken.</p>
       </div>
 
       <div className="before-after-grid">
@@ -302,12 +297,28 @@ function ContactSection() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setSent(true)
+    
+    try {
+      const response = await fetch('http://localhost:4000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSent(true)
+        setFormData({ name: "", email: "", message: "" })
+      } else {
+        throw new Error('Failed to send message')
+      }
+    } catch (error) {
+      console.error('Error sending contact form:', error)
+      alert('Er is een fout opgetreden. Probeer het opnieuw.')
+    } finally {
       setLoading(false)
-      setFormData({ name: "", email: "", message: "" })
-    }, 1000)
+    }
   }
 
   return (

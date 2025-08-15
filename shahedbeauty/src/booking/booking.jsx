@@ -22,25 +22,13 @@ export default function Booking() {
 
   const packages = [
     {
-      id: "single",
-      name: "Enkele Behandeling",
-      price: "€89",
-      description: "Eén gebied • 15–30 min",
-      icon: "✨",
-    },
-    {
-      id: "full-body",
-      name: "Volledig Lichaam",
-      price: "€299",
-      description: "Meerdere gebieden • 60–90 min",
+      id: "full-body-discount",
+      name: "Volledig Lichaam - Speciale Aanbieding",
+      price: "€200",
+      originalPrice: "€300",
+      description: "Complete lichaam • 6-8 behandelingen • €100 korting!",
       icon: "💎",
-    },
-    {
-      id: "subscription",
-      name: "6-Maanden Plan",
-      price: "€79/mnd",
-      description: "Maandelijks • Flexibele gebieden",
-      icon: "⭐",
+      isSpecial: true,
     },
   ]
 
@@ -164,9 +152,9 @@ export default function Booking() {
     <div className="booking-page">
       <div className="booking-container">
         <div className="booking-header">
-          <h1 className="booking-title">Afspraak Maken</h1>
+          <h1 className="booking-title">Boek Je Speciale Aanbieding</h1>
           <p className="booking-subtitle">
-            Kies een pakket, selecteer datum & tijd, vul uw gegevens in, en u bent klaar.
+            Volledig lichaam behandeling voor slechts €200 (normaal €300). Beperkte tijd aanbieding!
           </p>
         </div>
 
@@ -187,20 +175,28 @@ export default function Booking() {
         <div className="booking-content">
           {step === 1 && (
             <div className="step-content">
-              <h2 className="step-title">Kies Uw Pakket</h2>
-              <div className="packages-grid">
+              <h2 className="step-title">Jouw Speciale Aanbieding</h2>
+              <div className="packages-grid single-package-booking">
                 {packages.map((pkg) => (
                   <button
                     key={pkg.id}
                     onClick={() => updateBookingData("pkg", pkg.id)}
-                    className={`package-option ${bookingData.pkg === pkg.id ? "package-selected" : ""}`}
+                    className={`package-option ${bookingData.pkg === pkg.id ? "package-selected" : ""} ${pkg.isSpecial ? "package-special" : ""}`}
                   >
                     <div className="package-icon">{pkg.icon}</div>
                     <div className="package-name">{pkg.name}</div>
-                    <div className="package-price">{pkg.price}</div>
+                    <div className="package-pricing">
+                      <div className="package-price">{pkg.price}</div>
+                      {pkg.originalPrice && (
+                        <div className="package-original-price">{pkg.originalPrice}</div>
+                      )}
+                    </div>
                     <div className="package-desc">{pkg.description}</div>
                   </button>
                 ))}
+              </div>
+              <div className="special-offer-note">
+                <p>🔥 Beperkte tijd aanbieding - Bespaar €100 op onze volledige lichaam behandeling!</p>
               </div>
             </div>
           )}

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Logo from '../assets/shlogo.png'
 import './navbar.css'
 
 export default function Navbar({ onNavigate }) {
@@ -10,7 +11,7 @@ export default function Navbar({ onNavigate }) {
     <header className="navbar">
       <div className="navbar-container">
         <button onClick={() => onNavigate("home")} className="navbar-logo">
-          <div className="logo-icon">✨</div>
+          <img className="logo-icon" src={Logo} alt="" />
           <span className="logo-text">Shahed Beauty</span>
         </button>
 

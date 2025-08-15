@@ -6,7 +6,7 @@ export default function PackageStep({ bookingData, setBookingData, setBookingSte
       id: "single",
       name: "Single Session",
       price: "$89",
-      description: "One area • 15–30 min",
+      description: "Een gebied • 15–30 min",
       icon: "✨",
     },
     {

@@ -1,7 +1,7 @@
 .booking-page {
   min-height: calc(100vh - 80px);
   padding: 40px 0;
-  background: #f9fafb;
+  background: linear-gradient(135deg, #fdf2f8 0%, #f8fafc 100%);
 }
 
 .booking-container {
@@ -56,8 +56,9 @@
 }
 
 .stepper-active {
-  background: #10b981;
+  background: linear-gradient(135deg, #db2777, #be185d);
   color: white;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
 }
 
 .stepper-label {
@@ -110,13 +111,68 @@
 }
 
 .package-option:hover {
-  border-color: #d1d5db;
+  border-color: #db2777;
   background: #f9fafb;
 }
 
+.package-option.package-special {
+  border: 2px solid #db2777;
+  background: linear-gradient(135deg, #fdf2f8, #ffffff);
+  position: relative;
+  box-shadow: 0 4px 20px rgba(219, 39, 119, 0.2);
+}
+
+.package-option.package-special::before {
+  content: "🔥 SPECIALE AANBIEDING";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #db2777, #be185d);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
+}
+
+.single-package-booking {
+  justify-content: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.package-pricing {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.package-original-price {
+  font-size: 1rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.special-offer-note {
+  text-align: center;
+  margin-top: 24px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  border: 1px solid #f9a8d4;
+  border-radius: 8px;
+  color: #be185d;
+  font-weight: 500;
+}
+
 .package-selected {
-  border-color: #10b981;
-  background: #ecfdf5;
+  border-color: #db2777;
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.2);
+  transform: translateY(-2px);
 }
 
 .package-icon {

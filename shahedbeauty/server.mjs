@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
+import sgMail from '@sendgrid/mail';
 
 dotenv.config();
 
@@ -31,6 +32,9 @@ console.log('Attempting to connect to MongoDB...');
 
 let db;
 
+// Configure SendGrid
+console.log('Configuring SendGrid with API key:', process.env.SENDGRID_API_KEY ? 'API key found' : 'API key missing');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Use the original URI with proper SSL
 MongoClient.connect(mongoUri)
@@ -56,6 +60,62 @@ app.post('/api/appointments', async (req, res) => {
   } catch (error) {
     console.error('Error creating appointment:', error);
     res.status(500).json({ error: 'Failed to create appointment' });
+  }
+});
+
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+  try {
+    console.log('Received contact form:', req.body);
+    const { name, email, message } = req.body;
+    
+    console.log('Preparing to send emails...');
+    console.log('From email:', process.env.EMAIL_USER);
+    console.log('To email (owner):', process.env.EMAIL_USER);
+    console.log('To email (customer):', email);
+    
+    // Send email to you (business owner)
+    console.log('Sending email to business owner...');
+    const ownerEmail = await sgMail.send({
+      to: process.env.EMAIL_USER,
+      from: process.env.EMAIL_USER,
+      subject: 'Nieuw Contact Formulier - Shahed Beauty',
+      html: `
+        <h2>Nieuw bericht van website</h2>
+        <p><strong>Naam:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Bericht:</strong></p>
+        <p>${message}</p>
+      `
+    });
+    console.log('Owner email sent successfully:', ownerEmail[0].statusCode);
+
+    // Send confirmation to customer
+    console.log('Sending confirmation to customer...');
+    const customerEmail = await sgMail.send({
+      to: email,
+      from: process.env.EMAIL_USER,
+      subject: 'Bedankt voor uw bericht - Shahed Beauty',
+      html: `
+        <h2>Bedankt voor uw bericht!</h2>
+        <p>Beste ${name},</p>
+        <p>We hebben uw bericht ontvangen en nemen zo spoedig mogelijk contact met u op.</p>
+        <p>Met vriendelijke groet,<br>Shahed Beauty Team</p>
+        
+        <hr>
+        <p><small>Adres: Zamenhofdreef 4, 3562 JW Utrecht, Nederland<br>
+        Telefoon: +31 6 85235657<br>
+        WhatsApp: +31 6 86116982</small></p>
+      `
+    });
+    console.log('Customer email sent successfully:', customerEmail[0].statusCode);
+
+    console.log('All contact emails sent successfully');
+    res.status(200).json({ message: 'Contact form sent successfully' });
+  } catch (error) {
+    console.error('Error sending contact email:', error);
+    console.error('Error details:', error.response?.body || error.message);
+    res.status(500).json({ error: 'Failed to send contact form', details: error.message });
   }
 });
 
