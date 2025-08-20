@@ -7,13 +7,18 @@ export const saveAppointmentToDatabase = async (bookingData) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        package: bookingData.pkg,
-        date: bookingData.date.toISOString(),
+        pkg: bookingData.pkg,
+        package: bookingData.package || bookingData.pkg,
+        date: bookingData.date instanceof Date ? bookingData.date.toISOString() : bookingData.date,
         time: bookingData.time,
-        customerName: bookingData.name,
-        customerEmail: bookingData.email,
-        customerPhone: bookingData.phone,
+        name: bookingData.name,
+        customerName: bookingData.customerName || bookingData.name,
+        email: bookingData.email,
+        customerEmail: bookingData.customerEmail || bookingData.email,
+        phone: bookingData.phone,
+        customerPhone: bookingData.customerPhone || bookingData.phone,
         notes: bookingData.notes,
+        areas: bookingData.areas || [],
         createdAt: new Date().toISOString(),
         status: 'confirmed'
       })

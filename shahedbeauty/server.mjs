@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { MongoClient } from 'mongodb';
+// import { MongoClient } from 'mongodb'; // MongoDB removed
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
 
@@ -24,80 +24,54 @@ process.on('unhandledRejection', (err) => {
 app.use(cors());
 app.use(express.json());
 
-//mongodb connection
-console.log('Starting server...');
-
-const mongoUri = process.env.MONGOURI;
-console.log('Attempting to connect to MongoDB...');
-
-let db;
+// MongoDB connection removed
 
 // Configure SendGrid
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// Use the original URI with proper SSL
-MongoClient.connect(mongoUri)
-  .then((client) => {
-    console.log('MongoDB connection successful!');
-    db = client.db('ShahedBeautyDB');
-    console.log(`Connected to Database : ${db.databaseName}`);
+//routes
 
-
-    //routes
- 
 //submit appointment
 app.post('/api/appointments', async (req, res) => {
   try {
     console.log('Received appointment request:', req.body);
     console.log('Full appointment data object:', JSON.stringify(req.body, null, 2));
     const appointmentData = req.body;
-    console.log('Attempting to save to MongoDB...');
-    
-    // Debug: Check all possible field variations
-    console.log('All possible field names:', {
-      // Name variations
-      name: appointmentData.name,
-      customerName: appointmentData.customerName,
-      fullName: appointmentData.fullName,
-      // Email variations  
-      email: appointmentData.email,
-      customerEmail: appointmentData.customerEmail,
-      userEmail: appointmentData.userEmail,
-      // Phone variations
-      phone: appointmentData.phone,
-      phoneNumber: appointmentData.phoneNumber,
-      customerPhone: appointmentData.customerPhone,
-      // Message variations
-      message: appointmentData.message,
-      notes: appointmentData.notes,
-      comments: appointmentData.comments,
-      opmerkingen: appointmentData.opmerkingen
-    });
-    console.log('Business email:', process.env.EMAIL_USER);
-    
-    const result = await db.collection('Afspraken').insertOne(appointmentData);
-    console.log('Successfully saved appointment with ID:', result.insertedId);
-    
-    console.log('Sending appointment emails from:', process.env.EMAIL_USER);
-    
-    // Get customer data (handle different possible field names)
+
+    // Normalize incoming fields
     const customerEmail = appointmentData.customerEmail || appointmentData.email || appointmentData.userEmail || appointmentData.contactEmail || appointmentData.emailAddress;
     const customerName = appointmentData.name || appointmentData.customerName || appointmentData.fullName;
     const customerPhone = appointmentData.phone || appointmentData.phoneNumber || appointmentData.customerPhone;
     const customerMessage = appointmentData.message || appointmentData.notes || appointmentData.comments || appointmentData.opmerkingen;
-    
+    const packageName = appointmentData.package || appointmentData.pkg;
+    let appointmentDate = appointmentData.date;
+    // Accept both ISO and plain date strings
+    if (appointmentDate) {
+      if (typeof appointmentDate === 'string') {
+        // Try to parse ISO string
+        const parsedDate = new Date(appointmentDate);
+        if (!isNaN(parsedDate.getTime())) {
+          appointmentDate = parsedDate.toLocaleDateString('nl-NL');
+        } else {
+          appointmentDate = appointmentDate; // fallback to string
+        }
+      }
+    }
+    const appointmentTime = appointmentData.time;
+    const appointmentAreas = appointmentData.areas || [];
+
+    // Generate a random appointment ID (since MongoDB is removed)
+    const appointmentId = Math.random().toString(36).substr(2, 9);
+
     if (!customerEmail) {
       console.error('No customer email found in appointment data');
-      // Still save appointment but don't send customer email
       res.status(201).json({ 
         message: 'Appointment created successfully (no customer email provided)', 
-        appointmentId: result.insertedId 
+        appointmentId
       });
       return;
     }
-    
-    console.log('Customer email found:', customerEmail);
-    
+
     // Send appointment notification to business owner
     await sgMail.send({
       to: process.env.EMAIL_USER,
@@ -105,7 +79,7 @@ app.post('/api/appointments', async (req, res) => {
         email: process.env.EMAIL_USER,
         name: 'Shahed Beauty Website'
       },
-      replyTo: customerEmail, // Allow direct reply to customer
+      replyTo: customerEmail,
       subject: 'Nieuwe Afspraak - Shahed Beauty',
       html: `
         <!DOCTYPE html>
@@ -117,33 +91,30 @@ app.post('/api/appointments', async (req, res) => {
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #db2777;">Nieuwe Afspraak Ontvangen</h2>
-            
             <div style="background: #f9f9f9; padding: 20px; border-left: 4px solid #db2777; margin: 20px 0;">
               <h3 style="margin: 0 0 15px 0; color: #db2777;">Klantgegevens:</h3>
               <p><strong>Naam:</strong> ${customerName || 'Niet opgegeven'}</p>
               <p><strong>Email:</strong> ${customerEmail}</p>
               <p><strong>Telefoon:</strong> ${customerPhone || 'Niet opgegeven'}</p>
             </div>
-            
             <div style="background: #f0f8ff; padding: 20px; border-radius: 5px; margin: 20px 0;">
               <h3 style="margin: 0 0 15px 0; color: #db2777;">Afspraakdetails:</h3>
-              <p><strong>Datum:</strong> ${appointmentData.date}</p>
-              <p><strong>Tijd:</strong> ${appointmentData.time}</p>
-              <p><strong>Pakket:</strong> ${appointmentData.package}</p>
-              ${appointmentData.areas ? `<p><strong>Behandelingsgebieden:</strong> ${appointmentData.areas.join(', ')}</p>` : '<p><strong>Behandeling:</strong> Volledig lichaam</p>'}
+              <p><strong>Datum:</strong> ${appointmentDate}</p>
+              <p><strong>Tijd:</strong> ${appointmentTime}</p>
+              <p><strong>Pakket:</strong> ${packageName}</p>
+              ${appointmentAreas.length ? `<p><strong>Behandelingsgebieden:</strong> ${appointmentAreas.join(', ')}</p>` : '<p><strong>Behandeling:</strong> Volledig lichaam</p>'}
               ${customerMessage ? `<p><strong>Opmerkingen:</strong> ${customerMessage}</p>` : ''}
             </div>
-            
             <hr style="margin: 20px 0;">
             <p style="font-size: 12px; color: #666;">
               Deze afspraak is gemaakt via shahedbeauty.com<br>
-              Afspraak ID: ${result.insertedId}
+              Afspraak ID: ${appointmentId}
             </p>
           </div>
         </body>
         </html>
       `,
-      text: `Nieuwe Afspraak Ontvangen\n\nKlantgegevens:\nNaam: ${customerName || 'Niet opgegeven'}\nEmail: ${customerEmail}\nTelefoon: ${customerPhone || 'Niet opgegeven'}\n\nAfspraakdetails:\nDatum: ${appointmentData.date}\nTijd: ${appointmentData.time}\nPakket: ${appointmentData.package}\nBehandelingsgebieden: ${appointmentData.areas ? appointmentData.areas.join(', ') : 'Volledig lichaam'}\n${customerMessage ? `Opmerkingen: ${customerMessage}\n` : ''}\nAfspraak ID: ${result.insertedId}`
+      text: `Nieuwe Afspraak Ontvangen\n\nKlantgegevens:\nNaam: ${customerName || 'Niet opgegeven'}\nEmail: ${customerEmail}\nTelefoon: ${customerPhone || 'Niet opgegeven'}\n\nAfspraakdetails:\nDatum: ${appointmentDate}\nTijd: ${appointmentTime}\nPakket: ${packageName}\nBehandelingsgebieden: ${appointmentAreas.length ? appointmentAreas.join(', ') : 'Volledig lichaam'}\n${customerMessage ? `Opmerkingen: ${customerMessage}\n` : ''}\nAfspraak ID: ${appointmentId}`
     });
 
     // Send confirmation email to customer
@@ -166,22 +137,19 @@ app.post('/api/appointments', async (req, res) => {
             <h2 style="color: #db2777;">Bedankt voor uw afspraak!</h2>
             <p>Beste ${customerName || 'klant'},</p>
             <p>Uw afspraak is succesvol geboekt. Hieronder vindt u de details van uw afspraak:</p>
-            
             <div style="background: linear-gradient(135deg, #db2777, #f59e0b); padding: 20px; border-radius: 10px; color: white; margin: 20px 0;">
               <h3 style="margin: 0 0 15px 0;">Uw Afspraakdetails</h3>
-              <p style="margin: 5px 0;"><strong>📅 Datum:</strong> ${appointmentData.date}</p>
-              <p style="margin: 5px 0;"><strong>🕐 Tijd:</strong> ${appointmentData.time}</p>
-              <p style="margin: 5px 0;"><strong>💎 Pakket:</strong> ${appointmentData.package}</p>
+              <p style="margin: 5px 0;"><strong>📅 Datum:</strong> ${appointmentDate}</p>
+              <p style="margin: 5px 0;"><strong>🕐 Tijd:</strong> ${appointmentTime}</p>
+              <p style="margin: 5px 0;"><strong>💎 Pakket:</strong> ${packageName}</p>
               <p style="margin: 5px 0;"><strong>📍 Locatie:</strong> Zamenhofdreef 4, 3562 JW Utrecht</p>
             </div>
-            
-            ${appointmentData.areas ? `
+            ${appointmentAreas.length ? `
             <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <h4 style="margin: 0 0 10px 0; color: #db2777;">Behandelingsgebieden:</h4>
-              <p style="margin: 0;">${appointmentData.areas.join(', ')}</p>
+              <p style="margin: 0;">${appointmentAreas.join(', ')}</p>
             </div>
             ` : ''}
-            
             <div style="background: #fff8dc; padding: 15px; border-radius: 5px; border: 1px solid #f59e0b; margin: 20px 0;">
               <h4 style="margin: 0 0 10px 0; color: #f59e0b;">⚠️ Belangrijke informatie:</h4>
               <ul style="margin: 0; padding-left: 20px;">
@@ -191,29 +159,26 @@ app.post('/api/appointments', async (req, res) => {
                 <li>Bij vragen, neem gerust contact op</li>
               </ul>
             </div>
-            
             <p>We kijken ernaar uit u te zien!</p>
             <p>Met vriendelijke groet,<br>
             <strong>Shahed Beauty Team</strong></p>
-            
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
             <div style="font-size: 12px; color: #666;">
               <p><strong>Shahed Beauty</strong><br>
               📍 Zamenhofdreef 4, 3562 JW Utrecht, Nederland<br>
               📞 Telefoon: <a href="tel:+31685235657" style="color: #db2777;">+31 6 85235657</a><br>
               💬 WhatsApp: <a href="https://wa.me/31686116982" style="color: #db2777;">+31 6 86116982</a></p>
-              <p style="margin-top: 15px;">Afspraak referentie: ${result.insertedId}</p>
+              <p style="margin-top: 15px;">Afspraak referentie: ${appointmentId}</p>
             </div>
           </div>
         </body>
         </html>
       `,
-      text: `Bedankt voor uw afspraak!\n\nBeste ${customerName || 'klant'},\n\nUw afspraak is succesvol geboekt:\n\nDatum: ${appointmentData.date}\nTijd: ${appointmentData.time}\nPakket: ${appointmentData.package}\nLocatie: Zamenhofdreef 4, 3562 JW Utrecht\n\n${appointmentData.areas ? `Behandelingsgebieden: ${appointmentData.areas.join(', ')}\n\n` : ''}Belangrijke informatie:\n- Kom 15 minuten voor uw afspraak\n- Zorg dat de huid schoon en droog is\n- Vermijd zonnen 2 weken voor behandeling\n- Bij vragen, neem gerust contact op\n\nWe kijken ernaar uit u te zien!\n\nMet vriendelijke groet,\nShahed Beauty Team\n\nShahed Beauty\nZamenhofdreef 4, 3562 JW Utrecht, Nederland\nTelefoon: +31 6 85235657\nWhatsApp: +31 6 86116982\n\nAfspraak referentie: ${result.insertedId}`
+      text: `Bedankt voor uw afspraak!\n\nBeste ${customerName || 'klant'},\n\nUw afspraak is succesvol geboekt:\n\nDatum: ${appointmentDate}\nTijd: ${appointmentTime}\nPakket: ${packageName}\nLocatie: Zamenhofdreef 4, 3562 JW Utrecht\n\n${appointmentAreas.length ? `Behandelingsgebieden: ${appointmentAreas.join(', ')}\n\n` : ''}Belangrijke informatie:\n- Kom 15 minuten voor uw afspraak\n- Zorg dat de huid schoon en droog is\n- Vermijd zonnen 2 weken voor behandeling\n- Bij vragen, neem gerust contact op\n\nWe kijken ernaar uit u te zien!\n\nMet vriendelijke groet,\nShahed Beauty Team\n\nShahed Beauty\nZamenhofdreef 4, 3562 JW Utrecht, Nederland\nTelefoon: +31 6 85235657\nWhatsApp: +31 6 86116982\n\nAfspraak referentie: ${appointmentId}`
     });
 
     console.log('Appointment emails sent successfully');
-    
-    res.status(201).json({ message: 'Appointment created successfully', appointmentId: result.insertedId });
+    res.status(201).json({ message: 'Appointment created successfully', appointmentId });
   } catch (error) {
     console.error('Error creating appointment:', error);
     console.error('SendGrid error details:', error.response?.body);
@@ -229,9 +194,9 @@ app.post('/api/contact', async (req, res) => {
   try {
     console.log('Received contact form:', req.body);
     const { name, email, message } = req.body;
-    
+
     console.log('Sending emails from:', process.env.EMAIL_USER);
-    
+
     // Send email to you (business owner)
     await sgMail.send({
       to: process.env.EMAIL_USER,
@@ -323,12 +288,7 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// Start the server after database connection is established
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-  })
-  .catch((err) => {
-    console.error('Error connecting to database : ', err);
-    console.error('Full error details:', err.message);
-  });
