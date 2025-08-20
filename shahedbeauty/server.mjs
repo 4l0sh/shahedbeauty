@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-// import { MongoClient } from 'mongodb'; // MongoDB removed
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
 
@@ -204,7 +203,7 @@ app.post('/api/contact', async (req, res) => {
         email: process.env.EMAIL_USER,
         name: 'Shahed Beauty Website'
       },
-      replyTo: email, // Allow direct reply to customer
+      replyTo: email,
       subject: 'Nieuw Contact Formulier - Shahed Beauty',
       html: `
         <!DOCTYPE html>
