@@ -22,13 +22,28 @@ export default function Booking() {
 
   const packages = [
     {
-      id: "full-body-discount",
-      name: "Volledig Lichaam - Speciale Aanbieding",
-      price: "€200",
-      originalPrice: "€300",
-      description: "Complete lichaam • 6-8 behandelingen • €100 korting!",
+      id: "oks-bik-ben",
+      name: "Oksel, bikini en onder benen",
+      price: "€100",
+      description: "Oksel, bikini en onderbenen behandeling",
+      icon: "🦵",
+      isSpecial: false,
+    },
+    {
+      id: "hele-lichaam",
+      name: "Hele lichaam",
+      price: "€199",
+      description: "Volledig lichaam behandeling",
       icon: "💎",
       isSpecial: true,
+    },
+    {
+      id: "oks-bik",
+      name: "Oksel en bikini",
+      price: "€75",
+      description: "Oksel en bikini behandeling",
+      icon: "�",
+      isSpecial: false,
     },
   ]
 
@@ -115,6 +130,9 @@ export default function Booking() {
     URL.revokeObjectURL(url)
   }
 
+  const [instructionsChecked, setInstructionsChecked] = useState(false);
+  const [showInstructionsModal, setShowInstructionsModal] = useState(true);
+
   if (confirmed) {
     return (
       <div className="booking-page">
@@ -150,7 +168,44 @@ export default function Booking() {
 
   return (
     <div className="booking-page">
+      {showInstructionsModal && (
+        <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'#0008', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center'}}>
+          <div style={{background:'#fff8dc', borderRadius:16, padding:'32px 24px', maxWidth:500, width:'90%', boxShadow:'0 4px 24px #db277799', position:'relative'}}>
+            <h2 style={{color:'#db2777', marginBottom:16, textAlign:'center'}}>⚠️ Voorzorg & Nazorg instructies</h2>
+            <ul style={{marginBottom:24}}>
+              <li>Scheer het behandelgebied 12 tot 24 uur voor de behandeling</li>
+              <li>Zorg ervoor dat je de huid niet bruint en vermijd directe blootstelling aan de zon op het te behandelen gebied (minimaal 2 weken voor de behandeling). We kunnen je helaas niet behandelen als je huid gebruind is.</li>
+              <li>Gebruik geen zelfbruiners of bruiningsproducten zoals vochtregulerende zelfbruiners (2 weken voorafgaand), zonnebank (4 weken voorafgaand) en gebruik geen bruiningsmedicijnen zoals Melatonine II (6 maanden voorafgaand).</li>
+              <li>Draag tijdens de behandeling en daarna loszittende kleding van natuurlijke stoffen om wrijving en huidirritatie te voorkomen.</li>
+              <li>Houd de huid schoon en vermijd het gebruik van lotions of crèmes op het behandelde gebied op de dag van de behandeling</li>
+              <li>Vermijd vitamine A- of retinolproducten (1 week voorafgaand)</li>
+              <li>Het behandelgebied niet harsen, epileren met draad (threading) of epileren (4 weken voorafgaand)</li>
+              <li>Vermijd huidbehandelingen zoals microneedling, chemische peelings en overige intensieve behandelingen (2 weken voorafgaand) en vitamine A peelings (4 weken voorafgaand)</li>
+            </ul>
+            <h2 style={{color:'#db2777', marginBottom:16}}>Verzorging na de behandeling</h2>
+            <ul style={{marginBottom:24}}>
+              <li>Gebruik de producten aanbevolen door jouw therapeut, inclusief Cooling Gel</li>
+              <li>5 Dagen na de behandeling mag je het behandelde gebied handmatig scrubben</li>
+              <li>Vermijd directe blootstelling aan de zon gedurende 2 weken en zorg ervoor dat je dagelijks een SPF draagt</li>
+              <li>Vermijd directe hitte of hete douches gedurende de eerste 1 tot 2 dagen na jouw behandeling</li>
+              <li>Vermijd sporten, sauna's, spa's en stoombaden gedurende 5 dagen na de behandeling</li>
+              <li>Vermijd wrijven, pulken of krabben aan de huid</li>
+            </ul>
+            <button
+              style={{background:'#db2777', color:'#fff', border:'none', borderRadius:8, padding:'12px 24px', fontWeight:600, fontSize:'1rem', width:'100%', cursor:'pointer'}}
+              onClick={() => setShowInstructionsModal(false)}
+            >
+              Ik heb de instructies gelezen
+            </button>
+          </div>
+        </div>
+      )}
       <div className="booking-container">
+        <button
+          style={{position:'absolute', top:18, right:18, background:'#f59e0b', color:'#fff', border:'none', borderRadius:'50%', width:40, height:40, fontSize:'1.5rem', cursor:'pointer', zIndex:10}}
+          title="Bekijk instructies"
+          onClick={() => setShowInstructionsModal(true)}
+        >ℹ️</button>
         <div className="booking-header">
           <h1 className="booking-title">Boek Je Speciale Aanbieding</h1>
           <p className="booking-subtitle">
@@ -363,16 +418,29 @@ export default function Booking() {
               {step === 3 && "Controleren & Bevestigen →"}
             </button>
           ) : (
-            <button onClick={handleSubmit} disabled={submitting} className="action-btn action-btn-primary">
-              {submitting ? (
-                <>
-                  <span className="loading-spinner">⏳</span>
-                  Bezig met boeken...
-                </>
-              ) : (
-                "Afspraak Bevestigen"
-              )}
-            </button>
+            <div>
+              <div style={{marginBottom:16}}>
+                <label style={{display:'flex', alignItems:'center', fontWeight:500, color:'#db2777'}}>
+                  <input
+                    type="checkbox"
+                    checked={instructionsChecked}
+                    onChange={e => setInstructionsChecked(e.target.checked)}
+                    style={{marginRight:8, accentColor:'#db2777'}}
+                  />
+                  Ik heb de voorzorg & nazorg instructies gelezen en begrepen
+                </label>
+              </div>
+              <button onClick={handleSubmit} disabled={submitting || !instructionsChecked} className="action-btn action-btn-primary">
+                {submitting ? (
+                  <>
+                    <span className="loading-spinner">⏳</span>
+                    Bezig met boeken...
+                  </>
+                ) : (
+                  "Afspraak Bevestigen"
+                )}
+              </button>
+            </div>
           )}
         </div>
       </div>

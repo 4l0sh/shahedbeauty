@@ -131,19 +131,44 @@ function TechnologySection() {
 function PackagesSection({ onNavigate }) {
   const packages = [
     {
-      id: "full-body-discount",
-      name: "Volledig Lichaam - Speciale Aanbieding",
-      price: "€200",
-      originalPrice: "€300",
-      description: "Complete lichaam behandeling met onze geavanceerde diode laser.",
+      id: "oks-bik-ben",
+      name: "Oksel, bikini en onder benen",
+      price: "€100",
+      description: "Oksel, bikini en onderbenen behandeling",
+      features: [
+        "Oksel, bikini en onderbenen",
+        "Pijnloos bij -24°C",
+        "Snelle resultaten"
+      ],
+      icon: "🦵",
+      isSpecial: false,
+    },
+    {
+      id: "hele-lichaam",
+      name: "Hele lichaam",
+      price: "€199",
+      description: "Volledig lichaam behandeling",
       features: [
         "Alle lichaamsdelen inbegrepen",
         "Pijnloos bij -24°C",
         "Gratis nabehandeling",
-        "€100 korting - Beperkte tijd!"
+        "Speciale aanbieding!"
       ],
       icon: "💎",
       isSpecial: true,
+    },
+    {
+      id: "oks-bik",
+      name: "Oksel en bikini",
+      price: "€75",
+      description: "Oksel en bikini behandeling",
+      features: [
+        "Oksel en bikini",
+        "Pijnloos bij -24°C",
+        "Snelle resultaten"
+      ],
+      icon: "�",
+      isSpecial: false,
     },
   ]
 
